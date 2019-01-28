@@ -1,0 +1,29 @@
+1.对数据库中的表数据进行操作需要先导入一个方法: from sqlalchemy.orm import sessionmaker
+2.然后使用这个方法生成一个类:Session = sessionmaker(bind=ENGINE, autocommit=False, autoflush=False),bind参数是调用create_engine()方法的返回值
+  autocommit和autoflush参数应该是自动提交的功能
+3.更新数据库中的数据是通过Session类的实例化对象的方法对数据进行修改。
+4.向数据库中添加数据:
+	user = User()
+	user.name = "user1"
+	user.password = "password"
+	session.add(user)
+	session.commit()
+  创建了一个User对象。这个对象有3个成员变量，即id, name和password。与三个User类中三个Column对象的类成员变量名字一致。
+
+user对象添加进来。但是注意，
+  由于session的自动提交功能禁用了，所在执行完这行代码以后，数据库并没有真正更新。直到第15行代码执行完毕后，才会真正更新数据库。
+
+5.查询数据库:
+	user = session.query(User).filter_by(name="user1").first()
+	print ("%s %s" % (user.name, user.password))
+  代码中session.query方法会返回一个Query对象。此后，调用Query对象的filter_by方法进行查询。它返回的依然是Query对象。最后调用Query对象的first方法获得
+  查询记录的第1条记录。如果查询记录为空，则返回None。
+
+6.更新数据库中的字段:
+	user = session.query(User).filter_by(name="user1").first()
+	user.password = "newpassword"
+	session.commit()
+7.删除数据库中的字段:
+	user = session.query(User).filter_by(name="user1").first()
+	session.delete(user)
+	session.commit()
